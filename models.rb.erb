@@ -1,0 +1,49 @@
+class <%= model.name %> < Model
+
+  # @return [String]
+  def self.table_name
+      '<%= model.table_name %>'
+  end
+
+  # @return [Array<String>]
+  def self.columns
+      <%= columns_definitions.map do |column_definition|
+        column_definition.name
+      end %>
+  end
+
+  <% columns_definitions.each do |column_definition| %>
+  <% column_name = column_definition.name %>
+  <% column_type = ColumnDefinition::SQLITE_TYPE_TO_RUBY_CLASS[column_definition.type] %>
+  # @return [<%= "#@return #{column_type}" %>]
+  def <%= column_name %>
+    @<%= column_name %>
+  end
+
+  # @param [<%= column_type%>] <%= column_name %>
+  # @return [void]
+  def <%= column_name %>=(<%= column_name %>)
+    @<%= column_name %> = <%= column_name %>
+  end
+  <% end %>
+
+  <% model.has_ones.each do |has_one| %>
+  # @return [<%= has_one[:model_class] %>]
+  def <%= has_one[:attribute_name] %>
+    <%= has_one[:model_class] %>.where('id = ?', <%= has_one[:column_name] %>).first
+  end
+
+  # @param [<%= has_one[:model_class] %>] <%= has_one[:attribute_name] %>
+  # @return [void]
+  def <%= has_one[:attribute_name] %>=(<%= has_one[:attribute_name] %>)
+    @<%= has_one[:column_name] %> = <%= has_one[:attribute_name] %>.id
+  end
+  <% end %>
+
+  <% model.has_manys.each do |has_many| %>
+  # @return [Array<<%= has_many[:model_class] %>>]
+  def <%= has_many[:attribute_name] %>
+    <%= has_many[:model_class] %>.where('<%= has_many[:column_name] %> = ?', id).all
+  end
+  <% end %>
+end
