@@ -30,8 +30,8 @@ define_model 'Kit' do |model_definition|
   )
 end
 
-define_model 'KitBricks' do |model_definition|
-  model_definition.table 'kit_bricks'
+define_model 'KitBrick' do |model_definition|
+  model_definition.table 'kit_brick'
   model_definition.has_one(
       attribute_name: 'kit',
       model_class: 'Kit',

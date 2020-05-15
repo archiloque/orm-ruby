@@ -165,11 +165,11 @@ class Kit < Model
 
 end
 
-class KitBricks < Model
+class KitBrick < Model
 
   # @return [String]
   def self.table_name
-      'kit_bricks'
+      'kit_brick'
   end
 
   # @return [Array<String>]

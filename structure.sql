@@ -22,7 +22,7 @@ CREATE TABLE 'kit' (
   'description' TEXT NOT NULL
 );
 
-CREATE TABLE 'kit_bricks' (
+CREATE TABLE 'kit_brick' (
   'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 
   'kit_id' INTEGER NOT NULL,
@@ -32,4 +32,4 @@ CREATE TABLE 'kit_bricks' (
   FOREIGN KEY('kit_id') REFERENCES 'kit'('id'),
   FOREIGN KEY('brick_id') REFERENCES 'brick'('id')
 );
-CREATE UNIQUE INDEX 'idx_kit_brick_uniqu' ON 'kit_bricks'('kit_id', 'brick_id');
+CREATE UNIQUE INDEX 'idx_kit_brick_uniqu' ON 'kit_brick'('kit_id', 'brick_id');
