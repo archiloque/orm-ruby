@@ -14,13 +14,13 @@ class <%= model.name %> < Model
 
   <% columns_definitions.each do |column_definition| %>
   <% column_name = column_definition.name %>
-  <% column_type = ColumnDefinition::SQLITE_TYPE_TO_RUBY_CLASS[column_definition.type] %>
-  # @return [<%= "#@return #{column_type}" %>]
+  <% column_type = column_definition.type %>
+  # @return [<%= column_type %>]
   def <%= column_name %>
     @<%= column_name %>
   end
 
-  # @param [<%= column_type%>] <%= column_name %>
+  # @param <%= column_name %> [<%= column_type %>]
   # @return [void]
   def <%= column_name %>=(<%= column_name %>)
     @<%= column_name %> = <%= column_name %>
@@ -33,7 +33,7 @@ class <%= model.name %> < Model
     <%= has_one[:model_class] %>.where('id = ?', <%= has_one[:column_name] %>).first
   end
 
-  # @param [<%= has_one[:model_class] %>] <%= has_one[:attribute_name] %>
+  # @param <%= has_one[:attribute_name] %> [<%= has_one[:model_class] %>]
   # @return [void]
   def <%= has_one[:attribute_name] %>=(<%= has_one[:attribute_name] %>)
     @<%= has_one[:column_name] %> = <%= has_one[:attribute_name] %>.id

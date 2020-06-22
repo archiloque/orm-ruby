@@ -4,7 +4,7 @@ class ModelDefinition
 
   attr_reader :name, :table_name, :has_ones, :has_manys
 
-  # @param [String] name
+  # @param name [String]
   def initialize(name)
     @name = name
     @has_ones = []
@@ -18,9 +18,9 @@ class ModelDefinition
     @table_name = table_name
   end
 
-  # @param [String] attribute_name
-  # @param [String] model_class
-  # @param [String] column_name
+  # @param attribute_name [String]
+  # @param model_class [String]
+  # @param column_name [String]
   # @return [void]
   def has_one(attribute_name:, model_class:, column_name:)
     @has_ones << {
@@ -39,9 +39,10 @@ class ModelDefinition
   end
 end
 
-# @param [String] model_name
-# @yieldparam [ModelDefinition] model_definition
+# @param model_name [String]
 # @yield [model_definition]
+# @yieldparam model_definition [ModelDefinition]
+# @yieldreturn [void]
 def define_model(model_name, &block)
   puts "Defining model [#{model_name}]"
   model_definition = ModelDefinition.new(model_name)
@@ -60,13 +61,8 @@ class ColumnDefinition
 
   attr_reader :name, :type
 
-  SQLITE_TYPE_TO_RUBY_CLASS = {
-      'INTEGER' => 'Integer',
-      'TEXT' => 'String'
-  }
-
-  # @param [String] name
-  # @param [String] type
+  # @param name [String]
+  # @param type [String]
   def initialize(name, type)
     @name = name
     @type = type
@@ -74,15 +70,26 @@ class ColumnDefinition
 
 end
 
+# Load the template
 erb = ERB.new(IO.read('models.rb.erb'))
 
+SQLITE_TYPE_TO_RUBY_CLASS = {
+    'INTEGER' => 'Integer',
+    'TEXT' => 'String'
+}
+
+# Apply the template to the model definitions
 models_code = ModelDefinition::MODELS_DEFINITIONS.map do |model|
   columns_definitions = DATABASE.table_info(model.table_name).collect do |column_info|
-    ColumnDefinition.new(column_info['name'], column_info['type'])
+    column_name = column_info['name']
+    sql_type = column_info['type']
+    ruby_type = SQLITE_TYPE_TO_RUBY_CLASS[sql_type]
+    ColumnDefinition.new(column_name, ruby_type)
   end
   erb.result_with_hash(model: model, columns_definitions: columns_definitions)
 end
 
+# Write the concatenated result to a file
 IO.write(
     'models.rb',
     models_code.

@@ -10,23 +10,23 @@ class Color < Model
       ["id", "name"]
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def id
     @id
   end
 
-  # @param [Integer] id
+  # @param id [Integer]
   # @return [void]
   def id=(id)
     @id = id
   end
 
-  # @return [ String]
+  # @return [String]
   def name
     @name
   end
 
-  # @param [String] name
+  # @param name [String]
   # @return [void]
   def name=(name)
     @name = name
@@ -51,45 +51,45 @@ class Brick < Model
       ["id", "name", "description", "color_id"]
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def id
     @id
   end
 
-  # @param [Integer] id
+  # @param id [Integer]
   # @return [void]
   def id=(id)
     @id = id
   end
 
-  # @return [ String]
+  # @return [String]
   def name
     @name
   end
 
-  # @param [String] name
+  # @param name [String]
   # @return [void]
   def name=(name)
     @name = name
   end
 
-  # @return [ String]
+  # @return [String]
   def description
     @description
   end
 
-  # @param [String] description
+  # @param description [String]
   # @return [void]
   def description=(description)
     @description = description
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def color_id
     @color_id
   end
 
-  # @param [Integer] color_id
+  # @param color_id [Integer]
   # @return [void]
   def color_id=(color_id)
     @color_id = color_id
@@ -100,7 +100,7 @@ class Brick < Model
     Color.where('id = ?', color_id).first
   end
 
-  # @param [Color] color
+  # @param color [Color]
   # @return [void]
   def color=(color)
     @color_id = color.id
@@ -125,34 +125,34 @@ class Kit < Model
       ["id", "name", "description"]
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def id
     @id
   end
 
-  # @param [Integer] id
+  # @param id [Integer]
   # @return [void]
   def id=(id)
     @id = id
   end
 
-  # @return [ String]
+  # @return [String]
   def name
     @name
   end
 
-  # @param [String] name
+  # @param name [String]
   # @return [void]
   def name=(name)
     @name = name
   end
 
-  # @return [ String]
+  # @return [String]
   def description
     @description
   end
 
-  # @param [String] description
+  # @param description [String]
   # @return [void]
   def description=(description)
     @description = description
@@ -177,45 +177,45 @@ class KitBrick < Model
       ["id", "kit_id", "brick_id", "quantity"]
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def id
     @id
   end
 
-  # @param [Integer] id
+  # @param id [Integer]
   # @return [void]
   def id=(id)
     @id = id
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def kit_id
     @kit_id
   end
 
-  # @param [Integer] kit_id
+  # @param kit_id [Integer]
   # @return [void]
   def kit_id=(kit_id)
     @kit_id = kit_id
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def brick_id
     @brick_id
   end
 
-  # @param [Integer] brick_id
+  # @param brick_id [Integer]
   # @return [void]
   def brick_id=(brick_id)
     @brick_id = brick_id
   end
 
-  # @return [ Integer]
+  # @return [Integer]
   def quantity
     @quantity
   end
 
-  # @param [Integer] quantity
+  # @param quantity [Integer]
   # @return [void]
   def quantity=(quantity)
     @quantity = quantity
@@ -226,7 +226,7 @@ class KitBrick < Model
     Kit.where('id = ?', kit_id).first
   end
 
-  # @param [Kit] kit
+  # @param kit [Kit]
   # @return [void]
   def kit=(kit)
     @kit_id = kit.id
@@ -237,7 +237,7 @@ class KitBrick < Model
     Brick.where('id = ?', brick_id).first
   end
 
-  # @param [Brick] brick
+  # @param brick [Brick]
   # @return [void]
   def brick=(brick)
     @brick_id = brick.id

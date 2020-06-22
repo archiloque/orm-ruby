@@ -18,6 +18,7 @@ CREATE TABLE 'brick' (
 
 CREATE TABLE 'kit' (
   'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  
   'name' TEXT NOT NULL,
   'description' TEXT NOT NULL
 );

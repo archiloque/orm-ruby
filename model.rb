@@ -1,5 +1,6 @@
 require 'sqlite3'
 
+# @abstract
 class Model
 
   DATABASE = SQLite3::Database.new('orm-ruby.sqlite')
@@ -23,12 +24,16 @@ class Model
 
   # @return [void]
   def insert
+    # Columns names without 'id'
+    # because the id values are managed by the database
     columns_names_except_id = self.class.columns.
         select { |column| column != 'id' }
 
+    # Quote the columns names to avoid escaping issues
     quoted_columns_names_except_id = columns_names_except_id.
         map { |column_name| SQLite3::Database.quote(column_name) }
 
+    # Columns vales without 'id'
     columns_values_except_id = columns_names_except_id.
         map { |column_name| self.send(column_name) }
 
@@ -42,36 +47,43 @@ class Model
             "VALUES (#{Array.new(columns_names_except_id.length, '?').join(', ')})",
         columns_values_except_id
     )
+
+    # Set the `id` of the model from the value provided by the database
     self.id = DATABASE.last_insert_row_id
+  end
+
+  # @return [Model::QueryParameters]
+  def self.query_parameters
+    QueryParameters.new(self)
   end
 
   # @param [String] filter
   # @param [Array] params
   # @return [Model::QueryParameters]
   def self.where(filter, *params)
-    QueryParameters.new(self).where(filter, *params)
+    query_parameters.where(filter, *params)
   end
 
   # @param [String] order_by
   # @return [Model::QueryParameters]
   def self.order_by(order_by)
-    QueryParameters.new(self).order_by(order_by)
+    query_parameters.order_by(order_by)
   end
 
-  # @param [Integer] limit
+  # @param limit [Integer]
   # @return [Model::QueryParameters]
   def self.limit(limit)
-    QueryParameters.new(self).limit(limit)
+    query_parameters.limit(limit)
   end
 
   # @return [Array]
   def self.all
-    QueryParameters.new(self).all
+    query_parameters.all
   end
 
   # @return [Object]
   def self.first
-    QueryParameters.new(self).first
+    query_parameters.first
   end
 
   # @return [void]
@@ -84,7 +96,7 @@ class Model
     attr_writer :limit
     attr_reader :wheres, :order_bys, :limit
 
-    # @param [Class] model_class
+    # @param model_class [Class]
     def initialize(model_class)
       @model_class = model_class
       @wheres = []
@@ -92,16 +104,16 @@ class Model
       @limit = nil
     end
 
-    # @param [String] filter
-    # @param [Array] params
+    # @param expression [String]
+    # @param parameters [Array]
     # @return [Model::QueryParameters]
-    def where(filter, *params)
+    def where(expression, *parameters)
       new_query_parameters = self.dup
-      new_query_parameters.wheres << [filter, params]
+      new_query_parameters.wheres << {expression: expression, parameters: parameters}
       new_query_parameters
     end
 
-    # @param [String] order_by
+    # @param order_by [String]
     # @return [Model::QueryParameters]
     def order_by(order_by)
       new_query_parameters = self.dup
@@ -109,7 +121,7 @@ class Model
       new_query_parameters
     end
 
-    # @param [Integer] limit
+    # @param limit [Integer]
     # @return [Model::QueryParameters]
     def limit(limit)
       new_query_parameters = self.dup
@@ -126,8 +138,8 @@ class Model
         where_clause = ' '
         where_params = []
       else
-        where_clause = "WHERE #{@wheres.map { |filter| filter[0] }.join(' AND ')} "
-        where_params = @wheres.map { |filter| filter[1] }.flatten
+        where_clause = "WHERE #{@wheres.map { |where| where[:expression] }.join(' AND ')} "
+        where_params = @wheres.map { |where| where[:parameters] }.flatten
       end
 
       if @order_bys.empty?
@@ -144,8 +156,9 @@ class Model
 
       # Query looks like
       # SELECT column_name_1, column_name_2, …
-      #   FROM 'table_name'
-      #   WHERE column_1 = ? AND column_2 = ?
+      #   FROM table_name
+      #   WHERE column_A = ? AND column_B < ?
+      #   ORDER BY column_X asc, column_Y desc
       #   LIMIT 10
       DATABASE.execute(
           "SELECT #{quoted_columns_names.join(', ')} " +
